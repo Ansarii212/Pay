@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>الدفع - ملف الإنجاز</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- تحميل مكتبة PayPal -->
+  <script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&currency=SAR"></script>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f5f5dc; /* بيج */
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      color: #444;
+    }
+
+    .box {
+      background-color: white;
+      padding: 30px;
+      border: 2px solid gold;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 400px;
+    }
+
+    #generateBtn {
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      border: 2px solid gold;
+      border-radius: 8px;
+      background-color: #f5f5dc;
+      color: #333;
+      cursor: not-allowed;
+    }
+
+    #generateBtn.enabled {
+      background-color: gold;
+      color: white;
+      cursor: pointer;
+    }
+
+    .note {
+      font-size: 14px;
+      margin-top: 10px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="box">
+    <h1>دفع قيمة ملف الإنجاز</h1>
+    <p>المبلغ: <strong>10 ريال</strong></p>
+
+    <div id="paypal-button-container"></div>
+
+    <button id="generateBtn" disabled>إصدار ملف الإنجاز</button>
+
+    <p class="note">سيتم تفعيل الزر بعد الدفع بنجاح</p>
+  </div>
+
+  <script>
+    // الزر غير مفعل في البداية
+    const generateBtn = document.getElementById('generateBtn');
+
+    paypal.Buttons({
+      createOrder: function(data, actions) {
+        return actions.order.create({
+          purchase_units: [{
+            amount: {
+              value: '10.00'
+            }
+          }]
+        });
+      },
+      onApprove: function(data, actions) {
+        return actions.order.capture().then(function(details) {
+          alert('تم الدفع بنجاح، شكراً لك يا ' + details.payer.name.given_name);
+          generateBtn.disabled = false;
+          generateBtn.classList.add("enabled");
+          generateBtn.addEventListener('click', function () {
+            // هنا توجيه أو تنفيذ إنشاء الملف
+            window.location.href = "cert.html"; // استبدله برابط ملف الإنجاز
+          });
+        });
+      },
+      onError: function(err) {
+        console.error(err);
+        alert("حدث خطأ أثناء عملية الدفع. حاول مرة أخرى.");
+      }
+    }).render('#paypal-button-container');
+  </script>
+
+</body>
+</html>
